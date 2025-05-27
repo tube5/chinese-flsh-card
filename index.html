@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSFiddle r2s1ta6f</title>
+
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0; /* ⭐ 패딩 제거로 전체 화면 활용 */
+}
+
+/* ⭐ 플래시카드 컨테이너 - 완전 전체 화면 */
+.quiz-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 0; /* ⭐ 모바일에서 전체 화면 */
+  padding: 20px;
+  
+  width: 100vw; /* ⭐ 화면 전체 너비 */
+  height: 100vh; /* ⭐ 화면 전체 높이 */
+  
+  box-shadow: none; /* ⭐ 그림자 제거 */
+  text-align: center;
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.header {
+  flex-shrink: 0;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  color: #2d3748;
+  margin-bottom: 8px;
+  font-size: 28px; /* ⭐ 조금 줄임 */
+  font-weight: bold;
+}
+
+.subtitle {
+  color: #718096;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #e2e8f0;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b6b, #ffa726);
+  border-radius: 5px;
+  transition: width 0.3s ease;
+  width: 7%;
+}
+
+/* ⭐ 문제 영역 - 화면 중앙 차지 */
+.question-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 20px;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  margin: 20px 0;
+}
+
+.chinese-word {
+  font-size: 80px; /* ⭐ 더 크게 */
+  font-weight: bold;
+  color: #2d3748;
+  margin-bottom: 20px;
+  font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
+  line-height: 1.1;
+}
+
+.pronunciation {
+  font-size: 28px; /* ⭐ 더 크게 */
+  color: #718096;
+  font-style: italic;
+}
+
+.answers-container {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.answer-btn {
+  padding: 20px 25px;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(226, 232, 240, 0.9);
+  color: #4a5568;
+  border: 2px solid transparent;
+  min-height: 60px;
+}
+
+.answer-btn:hover {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+}
+
+/* ⭐ 정답/오답 표시 명확히 구분 */
+.answer-btn.correct {
+  background: #48bb78 !important; /* ⭐ 정답은 초록색 */
+  color: white !important;
+  border-color: #38a169 !important;
+  transform: scale(1.02);
+}
+
+.answer-btn.incorrect {
+  background: #f56565 !important; /* ⭐ 내가 선택한 오답은 빨간색 */
+  color: white !important;
+  border-color: #e53e3e !important;
+  transform: scale(0.98);
+}
+
+.answer-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+
+.feedback {
+  flex-shrink: 0;
+  margin: 15px 0;
+  padding: 15px;
+  border-radius: 12px;
+  font-weight: 500;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(128, 90, 213, 0.2);
+  color: #553c9a;
+  border: 1px solid #805ad5;
+  font-size: 16px;
+}
+
+.feedback.correct {
+  background: rgba(72, 187, 120, 0.2);
+  color: #2f855a;
+  border-color: #48bb78;
+}
+
+.control-buttons {
+  flex-shrink: 0;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.control-btn {
+  padding: 15px 25px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.restart-btn {
+  background: #e53e3e;
+  color: white;
+}
+
+.restart-btn:hover {
+  background: #c53030;
+  transform: translateY(-2px);
+}
+
+/* ⭐ 완료 화면 - 완전 오버레이 */
+.completion-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(102, 126, 234, 0.95);
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.completion-overlay.show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.completion-content {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+}
+
+.completion-content h2 {
+  color: #4a5568;
+  margin-bottom: 30px;
+  font-size: 32px;
+}
+
+.result-summary {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 25px;
+}
+
+.result-summary p {
+  font-size: 18px;
+  color: #4a5568;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.download-section {
+  background: rgba(72, 187, 120, 0.1);
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 25px;
+  border: 2px solid rgba(72, 187, 120, 0.3);
+}
+
+.download-section p {
+  color: #2f855a;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.download-btn {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  color: white;
+  margin-bottom: 10px;
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3);
+}
+
+.download-btn:disabled {
+  background: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.final-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+/* ⭐ 모바일 최적화 */
+@media (max-width: 768px) {
+  .quiz-container {
+    padding: 15px;
+  }
+  
+  .header h1 {
+    font-size: 24px;
+  }
+  
+  .chinese-word {
+    font-size: 60px;
+  }
+  
+  .pronunciation {
+    font-size: 22px;
+  }
+  
+  .answer-btn {
+    padding: 18px 20px;
+    font-size: 16px;
+    min-height: 55px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quiz-container {
+    padding: 10px;
+  }
+  
+  .header h1 {
+    font-size: 20px;
+  }
+  
+  .chinese-word {
+    font-size: 50px;
+  }
+  
+  .pronunciation {
+    font-size: 18px;
+  }
+  
+  .answer-btn {
+    padding: 15px 18px;
+    font-size: 15px;
+    min-height: 50px;
+  }
+}
+
+  </style>
+
+  
+</head>
+<body>
+  <!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>중국어 플래시카드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 9:16 비율 컨테이너 */
+        .quiz-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: 56.25vh; /* 9:16 비율 유지 */
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 헤더 영역 */
+        .header {
+            padding: 15px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ffa726);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 7%;
+        }
+
+        /* 메인 콘텐츠 영역 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            padding: 30px 20px;
+        }
+
+        .chinese-word {
+            font-size: 60px;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
+            line-height: 1;
+        }
+
+        .pronunciation {
+            font-size: 20px;
+            color: #718096;
+            font-style: italic;
+        }
+
+        /* 답안 영역 */
+        .answers-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .answer-btn {
+            padding: 18px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(226, 232, 240, 0.9);
+            color: #4a5568;
+            border: 2px solid transparent;
+            min-height: 55px;
+        }
+
+        .answer-btn:hover {
+            background: rgba(102, 126, 234, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .answer-btn.correct {
+            background: #48bb78 !important;
+            color: white !important;
+            border-color: #38a169 !important;
+        }
+
+        .answer-btn.incorrect {
+            background: #f56565 !important;
+            color: white !important;
+            border-color: #e53e3e !important;
+        }
+
+        .answer-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* 피드백 영역 */
+        .feedback {
+            min-height: 45px;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(128, 90, 213, 0.2);
+            color: #553c9a;
+            border: 1px solid #805ad5;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .feedback.correct {
+            background: rgba(72, 187, 120, 0.2);
+            color: #2f855a;
+            border-color: #48bb78;
+        }
+
+        /* 컨트롤 버튼 */
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .control-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .restart-btn:hover {
+            background: #c53030;
+        }
+
+        /* 완료 화면 */
+        .completion-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(102, 126, 234, 0.95);
+            z-index: 1000;
+        }
+
+        .completion-overlay.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .completion-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .completion-content h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .result-summary {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .result-summary p {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .download-section {
+            background: rgba(72, 187, 120, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(72, 187, 120, 0.3);
+        }
+
+        .download-section p {
+            color: #2f855a;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .download-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .download-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .final-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 480px) {
+            .quiz-container {
+                max-width: none;
+            }
+            
+            .chinese-word {
+                font-size: 50px;
+            }
+            
+            .pronunciation {
+                font-size: 18px;
+            }
+            
+            .answer-btn {
+                padding: 15px 18px;
+                font-size: 15px;
+                min-height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="header">
+            <h1>📚 중국어 장소와방향 퀴즈</h1>
+            <p class="subtitle">중국어 단어에 맞는 한국어를 선택하세요</p>
+            
+            <div class="progress-info">
+                <span class="progress-text">진척: <span id="current-question">1</span>/<span id="total-questions">15</span></span>
+                <span class="score-text">점수: <span id="score">0</span>점</span>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="question-area">
+                <div class="chinese-word" id="chinese-word">一直</div>
+                <div class="pronunciation" id="pronunciation">yīzhí</div>
+            </div>
+            
+            <div class="answers-container">
+                <button class="answer-btn" id="answer-0" onclick="selectAnswer(0)">곧바로</button>
+                <button class="answer-btn" id="answer-1" onclick="selectAnswer(1)">사거리</button>
+                <button class="answer-btn" id="answer-2" onclick="selectAnswer(2)">꽃집</button>
+                <button class="answer-btn" id="answer-3" onclick="selectAnswer(3)">도로</button>
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+            
+            <div class="control-buttons">
+                <button class="control-btn restart-btn" onclick="restartQuiz()">🔄 다시 시작</button>
+            </div>
+        </div>
+        
+        <div class="completion-overlay" id="completion-overlay">
+            <div class="completion-content">
+                <h2>🎉 학습 완료!</h2>
+                <div class="result-summary">
+                    <p>총 <span id="final-total">15</span>문제 중 <span id="final-correct">12</span>문제 정답!</p>
+                    <p>정답률: <span id="final-percentage">80</span>%</p>
+                    <p id="final-score">최종 점수: <span></span>점</p>
+                </div>
+                
+                <div class="download-section" id="download-section">
+                    <p>🔍 <strong>틀린 문제 복습하기</strong></p>
+                    <button class="download-btn" onclick="downloadWrongAnswers()">
+                        📥 틀린 문제 엑셀 다운로드
+                    </button>
+                    <p><small>틀린 문제들을 엑셀 파일로 다운로드해서 복습하세요!</small></p>
+                </div>
+                
+                <div class="final-buttons">
+                    <button class="control-btn restart-btn" onclick="restartQuiz()">🔄 다시 도전</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CSV 파일의 15개 단어 사용
+        const textbookWords = [
+            { chinese: "一直", pronunciation: "yīzhí", korean: "곧바로" },
+            { chinese: "十字路口", pronunciation: "shízì lùkǒu", korean: "사거리" },
+            { chinese: "离", pronunciation: "lí", korean: "~에서, ~로부터" },
+            { chinese: "花店", pronunciation: "huādiàn", korean: "꽃집" },
+            { chinese: "马路", pronunciation: "mǎlù", korean: "도로, 큰길" },
+            { chinese: "人行横道", pronunciation: "rénxíng héngdào", korean: "횡단보도" },
+            { chinese: "还是", pronunciation: "háishi", korean: "~하는 편이 더 좋다" },
+            { chinese: "别人", pronunciation: "biérén", korean: "다른 사람" },
+            { chinese: "地下通道", pronunciation: "dìxià tōngdào", korean: "지하 통로" },
+            { chinese: "写", pronunciation: "xiě", korean: "쓰다" },
+            { chinese: "角", pronunciation: "jiǎo", korean: "모퉁이" },
+            { chinese: "打听", pronunciation: "dǎting", korean: "물어보다" },
+            { chinese: "正门", pronunciation: "zhèngmén", korean: "정문" },
+            { chinese: "运气", pronunciation: "yùnqì", korean: "운, 운수" },
+            { chinese: "好心", pronunciation: "hǎoxīn", korean: "친절, 좋은 마음" }
+        ];
+
+        // 게임 상태 관리
+        let currentQuestion = 0;
+        let score = 0;
+        let isAnswered = false;
+        let autoNextTimer = null;
+        let clickCount = 0;
+        let quizData = [];
+        let wrongAnswers = [];
+        let correctCount = 0;
+        let totalQuestions = 0;
+
+        // DOM 요소 참조
+        const chineseWordEl = document.getElementById('chinese-word');
+        const pronunciationEl = document.getElementById('pronunciation');
+        const currentQuestionEl = document.getElementById('current-question');
+        const totalQuestionsEl = document.getElementById('total-questions');
+        const scoreEl = document.getElementById('score');
+        const progressFillEl = document.getElementById('progress-fill');
+        const feedbackEl = document.getElementById('feedback');
+        const completionOverlayEl = document.getElementById('completion-overlay');
+
+        // 배열 섞기 함수
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // 오답지 자동 생성
+        function generateWrongAnswers(correctAnswer, allWords, count = 3) {
+            const otherKoreanWords = allWords
+                .filter(word => word.korean !== correctAnswer)
+                .map(word => word.korean);
+            
+            return shuffleArray(otherKoreanWords).slice(0, count);
+        }
+
+        // 퀴즈 문제 자동 생성
+        function generateQuizQuestions() {
+            const shuffledWords = shuffleArray(textbookWords);
+            
+            return shuffledWords.map(word => {
+                const correctAnswer = word.korean;
+                const wrongAnswers = generateWrongAnswers(correctAnswer, textbookWords);
+                const allAnswers = shuffleArray([correctAnswer, ...wrongAnswers]);
+                const correctIndex = allAnswers.indexOf(correctAnswer);
+                
+                return {
+                    chinese: word.chinese,
+                    pronunciation: word.pronunciation,
+                    answers: allAnswers,
+                    correct: correctIndex,
+                    correctAnswer: correctAnswer
+                };
+            });
+        }
+
+        // 효과음 함수들
+        function playCorrectSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const frequency1 = 800;
+            const frequency2 = 1000;
+            const duration = 0.3;
+            
+            [frequency1, frequency2].forEach((freq, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime + index * 0.1);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + index * 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.1 + duration);
+                
+                oscillator.start(audioContext.currentTime + index * 0.1);
+                oscillator.stop(audioContext.currentTime + index * 0.1 + duration);
+            });
+        }
+
+        function playIncorrectSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function playCompletionSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [523, 659, 784, 1047];
+            
+            notes.forEach((freq, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime + index * 0.2);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + index * 0.2);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.2 + 0.5);
+                
+                oscillator.start(audioContext.currentTime + index * 0.2);
+                oscillator.stop(audioContext.currentTime + index * 0.2 + 0.5);
+            });
+        }
+
+        // 퀴즈 초기화
+        function initQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            isAnswered = false;
+            clickCount = 0;
+            wrongAnswers = [];
+            correctCount = 0;
+            
+            if (autoNextTimer) {
+                clearTimeout(autoNextTimer);
+                autoNextTimer = null;
+            }
+            
+            quizData = generateQuizQuestions();
+            totalQuestions = quizData.length;
+            
+            totalQuestionsEl.textContent = totalQuestions;
+            completionOverlayEl.classList.remove('show');
+            
+            loadQuestion();
+        }
+
+        // 문제 로드
+        function loadQuestion() {
+            if (currentQuestion >= quizData.length) {
+                showCompletionScreen();
+                return;
+            }
+
+            const question = quizData[currentQuestion];
+            
+            chineseWordEl.textContent = question.chinese;
+            pronunciationEl.textContent = question.pronunciation;
+            
+            const answerBtns = document.querySelectorAll('.answer-btn');
+            answerBtns.forEach((btn, index) => {
+                btn.textContent = question.answers[index];
+                btn.className = 'answer-btn';
+                btn.disabled = false;
+            });
+            
+            currentQuestionEl.textContent = currentQuestion + 1;
+            scoreEl.textContent = score;
+            progressFillEl.style.width = `${((currentQuestion) / quizData.length) * 100}%`;
+            
+            feedbackEl.textContent = '';
+            feedbackEl.className = 'feedback';
+            
+            isAnswered = false;
+            clickCount = 0;
+            
+            if (autoNextTimer) {
+                clearTimeout(autoNextTimer);
+                autoNextTimer = null;
+            }
+        }
+
+        // 답안 선택 처리
+        function selectAnswer(selectedIndex) {
+            const question = quizData[currentQuestion];
+            const answerBtns = document.querySelectorAll('.answer-btn');
+            
+            clickCount++;
+            
+            if (clickCount === 1) {
+                isAnswered = true;
+                
+                answerBtns.forEach(btn => btn.disabled = true);
+                
+                if (selectedIndex === question.correct) {
+                    answerBtns[selectedIndex].classList.add('correct');
+                    feedbackEl.textContent = '정답입니다! 🎉';
+                    feedbackEl.classList.add('correct');
+                    score += 10;
+                    scoreEl.textContent = score;
+                    correctCount++;
+                    
+                    playCorrectSound();
+                    createConfetti();
+                } else {
+                    answerBtns[selectedIndex].classList.add('incorrect');
+                    answerBtns[question.correct].classList.add('correct');
+                    
+                    feedbackEl.textContent = `오답입니다. 정답은 "${question.answers[question.correct]}"입니다.`;
+                    feedbackEl.classList.remove('correct');
+                    
+                    wrongAnswers.push({
+                        chinese: question.chinese,
+                        pronunciation: question.pronunciation,
+                        correctAnswer: question.correctAnswer,
+                        yourAnswer: question.answers[selectedIndex],
+                        questionNumber: currentQuestion + 1
+                    });
+                    
+                    playIncorrectSound();
+                }
+                
+                autoNextTimer = setTimeout(() => {
+                    nextQuestion();
+                }, 1000);
+                
+            } else {
+                if (autoNextTimer) {
+                    clearTimeout(autoNextTimer);
+                    autoNextTimer = null;
+                }
+                nextQuestion();
+            }
+        }
+
+        // 다음 문제로 이동
+        function nextQuestion() {
+            if (autoNextTimer) {
+                clearTimeout(autoNextTimer);
+                autoNextTimer = null;
+            }
+            
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        // 퀴즈 재시작
+        function restartQuiz() {
+            if (autoNextTimer) {
+                clearTimeout(autoNextTimer);
+                autoNextTimer = null;
+            }
+            
+            initQuiz();
+        }
+
+        // 완료 화면 표시
+        function showCompletionScreen() {
+            if (autoNextTimer) {
+                clearTimeout(autoNextTimer);
+                autoNextTimer = null;
+            }
+            
+            const percentage = Math.round((correctCount / totalQuestions) * 100);
+            document.getElementById('final-total').textContent = totalQuestions;
+            document.getElementById('final-correct').textContent = correctCount;
+            document.getElementById('final-percentage').textContent = percentage;
+            document.getElementById('final-score').querySelector('span').textContent = score;
+            
+            const downloadBtn = document.querySelector('.download-btn');
+            if (wrongAnswers.length === 0) {
+                downloadBtn.disabled = true;
+                downloadBtn.textContent = '🎉 모든 문제를 맞췄습니다!';
+                document.querySelector('.download-section p').innerHTML = 
+                    '<strong>완벽합니다!</strong><br>틀린 문제가 없어서 다운로드할 파일이 없어요.';
+            } else {
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = `📥 틀린 문제 ${wrongAnswers.length}개 다운로드`;
+            }
+            
+            completionOverlayEl.classList.add('show');
+            
+            playCompletionSound();
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => createConfetti(), i * 100);
+            }
+        }
+
+        // 틀린 문제 엑셀 다운로드
+        function downloadWrongAnswers() {
+            if (wrongAnswers.length === 0) {
+                alert('틀린 문제가 없습니다! 🎉');
+                return;
+            }
+            
+            const header = ['문제번호', '중국어', '발음', '정답', '선택한답', '학습상태'];
+            const csvData = wrongAnswers.map(item => [
+                item.questionNumber,
+                item.chinese,
+                item.pronunciation,
+                item.correctAnswer,
+                item.yourAnswer,
+                '복습필요'
+            ]);
+            
+            const allData = [header, ...csvData];
+            let csvContent = '';
+            allData.forEach(row => {
+                const escapedRow = row.map(cell => {
+                    const cellStr = String(cell);
+                    if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+                        return '"' + cellStr.replace(/"/g, '""') + '"';
+                    }
+                    return cellStr;
+                });
+                csvContent += escapedRow.join(',') + '\n';
+            });
+            
+            const BOM = '\uFEFF';
+            const finalContent = BOM + csvContent;
+            
+            const blob = new Blob([finalContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `중국어_복습문제_${new Date().toLocaleDateString('ko-KR')}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`📁 틀린 문제 ${wrongAnswers.length}개가 엑셀 파일로 다운로드되었습니다!\n\n파일을 열어서 복습하세요! 💪`);
+        }
+
+        // 색종이 효과
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd'];
+            
+            for (let i = 0; i < 6; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.zIndex = '1000';
+                confetti.style.pointerEvents = 'none';
+                confetti.style.borderRadius = '50%';
+                
+                document.body.appendChild(confetti);
+                
+                const animation = confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(100vh) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: 3000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                });
+                
+                animation.onfinish = () => confetti.remove();
+            }
+        }
+
+        // 페이지 로드 시 퀴즈 시작
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    </script>
+</body>
+</html>
+
+
+  <script>
+    
+  </script>
+</body>
+</html>
